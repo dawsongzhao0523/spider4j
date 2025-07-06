@@ -4,6 +4,8 @@
 [![Maven](https://img.shields.io/badge/Maven-3.6+-blue.svg)](https://maven.apache.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+**English** | [中文版本 (Chinese Version)](README_CN.md)
+
 A high-performance Java implementation of the Spider NL2SQL evaluation framework, providing comprehensive evaluation capabilities for Natural Language to SQL translation tasks.
 
 ## 🚀 Features
@@ -271,7 +273,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔄 Changelog
 
-### v1.0.0 (2024-01-01)
+### v1.0.0 (2025-07-06)
 - Initial Java implementation
 - Complete evaluation framework
 - CLI and API support
