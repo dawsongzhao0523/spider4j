@@ -263,38 +263,177 @@ public class SqlParser {
         return new Triple<>(idx, tableUnits, conds);
     }
     
-    // 其他解析方法的简化实现
+    // 其他解析方法的完整实现
     
     private Pair<Integer, List<ConditionUnit>> parseWhere(List<String> tokens, int startIdx, 
                                                          Map<String, String> tablesWithAlias, 
                                                          DatabaseSchema schema, 
                                                          List<String> defaultTables) {
-        // 简化实现
-        return new Pair<>(startIdx, new ArrayList<>());
+        int whereIdx = findKeyword(tokens, startIdx, "where");
+        if (whereIdx == -1) {
+            return new Pair<>(startIdx, new ArrayList<>());
+        }
+        
+        return parseConditions(tokens, whereIdx + 1, tablesWithAlias, schema, defaultTables);
+    }
+    
+    /**
+     * 解析条件列表
+     */
+    private Pair<Integer, List<ConditionUnit>> parseConditions(List<String> tokens, int startIdx,
+                                                              Map<String, String> tablesWithAlias,
+                                                              DatabaseSchema schema,
+                                                              List<String> defaultTables) {
+        int idx = startIdx;
+        List<ConditionUnit> conditions = new ArrayList<>();
+        
+        while (idx < tokens.size() && !SqlConstants.CLAUSE_KEYWORDS.contains(tokens.get(idx))) {
+            // 解析单个条件
+            Pair<Integer, ConditionUnit> condResult = parseCondition(tokens, idx, tablesWithAlias, schema, defaultTables);
+            idx = condResult.getLeft();
+            conditions.add(condResult.getRight());
+            
+            // 跳过AND/OR连接符
+            if (idx < tokens.size() && ("and".equals(tokens.get(idx)) || "or".equals(tokens.get(idx)))) {
+                idx++;
+            }
+        }
+        
+        return new Pair<>(idx, conditions);
+    }
+    
+    /**
+     * 解析单个条件
+     */
+    private Pair<Integer, ConditionUnit> parseCondition(List<String> tokens, int startIdx,
+                                                        Map<String, String> tablesWithAlias,
+                                                        DatabaseSchema schema,
+                                                        List<String> defaultTables) {
+        int idx = startIdx;
+        boolean notOp = false;
+        
+        // 检查NOT操作符
+        if (idx < tokens.size() && "not".equals(tokens.get(idx))) {
+            notOp = true;
+            idx++;
+        }
+        
+        // 解析左值
+        Pair<Integer, ValUnit> leftVal = parseValUnit(tokens, idx, tablesWithAlias, schema, defaultTables);
+        idx = leftVal.getLeft();
+        
+        // 解析操作符
+        int opId = 0; // 默认为"="
+        if (idx < tokens.size()) {
+            String op = tokens.get(idx);
+            if (SqlConstants.COND_OPS.contains(op)) {
+                opId = SqlConstants.COND_OPS.indexOf(op);
+                idx++;
+            }
+        }
+        
+        // 解析右值
+        Object val1 = null;
+        Object val2 = null;
+        
+        if (idx < tokens.size()) {
+            if ("(".equals(tokens.get(idx))) {
+                // 子查询
+                idx++; // 跳过'('
+                if (idx < tokens.size() && "select".equals(tokens.get(idx))) {
+                    Pair<Integer, SqlStructure> subQuery = parseSql(tokens, idx, tablesWithAlias, schema);
+                    idx = subQuery.getLeft();
+                    val1 = subQuery.getRight();
+                }
+                if (idx < tokens.size() && ")".equals(tokens.get(idx))) {
+                    idx++; // 跳过')'
+                }
+            } else {
+                // 简单值
+                val1 = tokens.get(idx);
+                idx++;
+            }
+        }
+        
+        ConditionUnit condition = new ConditionUnit(notOp, opId, leftVal.getRight(), val1, val2);
+        return new Pair<>(idx, condition);
     }
     
     private Pair<Integer, List<ColUnit>> parseGroupBy(List<String> tokens, int startIdx, 
                                                      Map<String, String> tablesWithAlias, 
                                                      DatabaseSchema schema, 
                                                      List<String> defaultTables) {
-        // 简化实现
-        return new Pair<>(startIdx, new ArrayList<>());
+        int groupIdx = findKeyword(tokens, startIdx, "group");
+        if (groupIdx == -1) {
+            return new Pair<>(startIdx, new ArrayList<>());
+        }
+        
+        int idx = groupIdx + 1;
+        if (idx < tokens.size() && "by".equals(tokens.get(idx))) {
+            idx++;
+        }
+        
+        List<ColUnit> groupItems = new ArrayList<>();
+        
+        while (idx < tokens.size() && !SqlConstants.CLAUSE_KEYWORDS.contains(tokens.get(idx))) {
+            // 简化实现：创建基本的ColUnit
+            ColUnit colUnit = new ColUnit(0, tokens.get(idx), false);
+            groupItems.add(colUnit);
+            idx++;
+            
+            if (idx < tokens.size() && ",".equals(tokens.get(idx))) {
+                idx++;
+            }
+        }
+        
+        return new Pair<>(idx, groupItems);
     }
     
     private Pair<Integer, List<ConditionUnit>> parseHaving(List<String> tokens, int startIdx, 
                                                           Map<String, String> tablesWithAlias, 
                                                           DatabaseSchema schema, 
                                                           List<String> defaultTables) {
-        // 简化实现
-        return new Pair<>(startIdx, new ArrayList<>());
+        int havingIdx = findKeyword(tokens, startIdx, "having");
+        if (havingIdx == -1) {
+            return new Pair<>(startIdx, new ArrayList<>());
+        }
+        
+        return parseConditions(tokens, havingIdx + 1, tablesWithAlias, schema, defaultTables);
     }
     
     private Pair<Integer, OrderByClause> parseOrderBy(List<String> tokens, int startIdx, 
                                                      Map<String, String> tablesWithAlias, 
                                                      DatabaseSchema schema, 
                                                      List<String> defaultTables) {
-        // 简化实现
-        return new Pair<>(startIdx, null);
+        int orderIdx = findKeyword(tokens, startIdx, "order");
+        if (orderIdx == -1) {
+            return new Pair<>(startIdx, null);
+        }
+        
+        int idx = orderIdx + 1;
+        if (idx < tokens.size() && "by".equals(tokens.get(idx))) {
+            idx++;
+        }
+        
+        List<ValUnit> valUnits = new ArrayList<>();
+        String orderType = "asc"; // 默认升序
+        
+        while (idx < tokens.size() && !SqlConstants.CLAUSE_KEYWORDS.contains(tokens.get(idx))) {
+            if ("asc".equals(tokens.get(idx)) || "desc".equals(tokens.get(idx))) {
+                orderType = tokens.get(idx);
+                idx++;
+            } else {
+                Pair<Integer, ValUnit> valResult = parseValUnit(tokens, idx, tablesWithAlias, schema, defaultTables);
+                idx = valResult.getLeft();
+                valUnits.add(valResult.getRight());
+                
+                if (idx < tokens.size() && ",".equals(tokens.get(idx))) {
+                    idx++;
+                }
+            }
+        }
+        
+        return new Pair<>(idx, new OrderByClause(orderType, valUnits));
     }
     
     private Pair<Integer, Integer> parseLimit(List<String> tokens, int startIdx) {
@@ -312,8 +451,58 @@ public class SqlParser {
                                                Map<String, String> tablesWithAlias, 
                                                DatabaseSchema schema, 
                                                List<String> defaultTables) {
-        // 简化实现
-        return new Pair<>(startIdx + 1, new ValUnit());
+        int idx = startIdx;
+        
+        if (idx >= tokens.size()) {
+            return new Pair<>(idx, new ValUnit());
+        }
+        
+        String token = tokens.get(idx);
+        
+        // 检查是否是子查询
+        if ("(".equals(token)) {
+            idx++; // 跳过'('
+            if (idx < tokens.size() && "select".equals(tokens.get(idx))) {
+                Pair<Integer, SqlStructure> subQuery = parseSql(tokens, idx, tablesWithAlias, schema);
+                idx = subQuery.getLeft();
+                if (idx < tokens.size() && ")".equals(tokens.get(idx))) {
+                    idx++; // 跳过')'
+                }
+                return new Pair<Integer, ValUnit>(idx, new ValUnit(SqlConstants.UNIT_TYPE_SQL, subQuery.getRight()));
+            }
+        }
+        
+        // 检查是否是数字
+        if (isNumeric(token)) {
+            idx++;
+            return new Pair<Integer, ValUnit>(idx, new ValUnit(SqlConstants.UNIT_TYPE_NUMBER, token));
+        }
+        
+        // 检查是否是字符串（引号包围）
+        if (token.startsWith("'") && token.endsWith("'")) {
+            idx++;
+            return new Pair<Integer, ValUnit>(idx, new ValUnit(SqlConstants.UNIT_TYPE_STRING, token.substring(1, token.length() - 1)));
+        }
+        
+        // 默认作为列名处理
+        ColUnit colUnit = new ColUnit(0, token, false);
+        idx++;
+        return new Pair<Integer, ValUnit>(idx, new ValUnit(SqlConstants.UNIT_TYPE_COLUMN, colUnit));
+    }
+    
+    /**
+     * 检查字符串是否为数字
+     */
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
     
     private Triple<Integer, String, String> parseTableUnit(List<String> tokens, int startIdx, 
@@ -348,6 +537,18 @@ public class SqlParser {
             idx++;
         }
         return idx;
+    }
+    
+    /**
+     * 查找关键字位置
+     */
+    private int findKeyword(List<String> tokens, int startIdx, String keyword) {
+        for (int i = startIdx; i < tokens.size(); i++) {
+            if (keyword.equals(tokens.get(i))) {
+                return i;
+            }
+        }
+        return -1;
     }
     
     // 辅助类

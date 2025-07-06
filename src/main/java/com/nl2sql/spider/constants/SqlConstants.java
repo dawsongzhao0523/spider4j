@@ -43,6 +43,12 @@ public class SqlConstants {
     public static final String TABLE_TYPE_TABLE_UNIT = "table_unit";
     public static final String TABLE_TYPE_SQL = "sql";
     
+    // 值单元类型
+    public static final String UNIT_TYPE_COLUMN = "column";
+    public static final String UNIT_TYPE_NUMBER = "number";
+    public static final String UNIT_TYPE_STRING = "string";
+    public static final String UNIT_TYPE_SQL = "sql";
+    
     // 难度级别阈值
     public static final int HARDNESS_EASY_THRESHOLD = 1;
     public static final int HARDNESS_MEDIUM_THRESHOLD = 2;
