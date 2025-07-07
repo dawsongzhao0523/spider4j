@@ -28,7 +28,7 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/spider-evaluation-java.git
+git clone https://github.com/dawsongzhao0523/spider4j.git
 cd spider-evaluation-java
 ```
 
@@ -263,9 +263,9 @@ docker build -t spider-evaluation:1.0.0 .
 
 ## 📞 联系我们
 
-- 项目主页: https://github.com/your-username/spider-evaluation-java
-- 问题反馈: https://github.com/your-username/spider-evaluation-java/issues
-- 邮箱: your-email@example.com
+- 项目主页: https://github.com/dawsongzhao0523/spider4j
+- 问题反馈: https://github.com/dawsongzhao0523/spider4j/issues
+- 邮箱: dawsongzhao0523@gmail.com
 
 ## 🔖 引用
 

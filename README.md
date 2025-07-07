@@ -29,7 +29,7 @@ A high-performance Java implementation of the Spider NL2SQL evaluation framework
 ### 1. Clone and Build
 
 ```bash
-git clone https://github.com/your-username/spider-evaluation-java.git
+git clone https://github.com/dawsongzhao0523/spider4j.git
 cd spider-evaluation-java
 ./build.sh
 ```
@@ -267,9 +267,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/spider-evaluation-java/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/spider-evaluation-java/discussions)
-- **Email**: support@yourdomain.com
+- **Issues**: [GitHub Issues](https://github.com/dawsongzhao0523/spider4j/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/dawsongzhao0523/spider4j/discussions)
+- **Email**: dawsongzhao0523@gmail.com
 
 ## 🔄 Changelog
 
