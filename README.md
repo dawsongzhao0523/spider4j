@@ -1,285 +1,207 @@
-# Spider NL2SQL Evaluation Framework (Java Version)
+# Spider Java Evaluation Framework
 
-[![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
-[![Maven](https://img.shields.io/badge/Maven-3.6+-blue.svg)](https://maven.apache.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+一个功能强大的Java版本Spider NL2SQL评估框架，支持多种数据库和动态Schema提取。
 
-**English** | [中文版本 (Chinese Version)](README_CN.md)
+## 🚀 快速开始
 
-A high-performance Java implementation of the Spider NL2SQL evaluation framework, providing comprehensive evaluation capabilities for Natural Language to SQL translation tasks.
-
-## 🚀 Features
-
-- **Complete Evaluation Suite**: Exact match, execution accuracy, and component-wise F1 scores
-- **Difficulty Classification**: Automatic classification into Easy/Medium/Hard/Extra levels
-- **High Performance**: Significant performance improvements over Python version
-- **Enterprise Ready**: Production-ready with comprehensive logging and error handling
-- **CLI & API**: Both command-line interface and programmatic API
-- **Modern Architecture**: Built with Java 17 LTS and modern design patterns
-
-## 📋 Requirements
-
-- **Java**: 17 or higher (LTS recommended)
-- **Maven**: 3.6 or higher
-- **Memory**: 2GB+ RAM recommended
-- **Storage**: 1GB+ free space
-
-## 🔧 Quick Start
-
-### 1. Clone and Build
-
-```bash
-git clone https://github.com/dawsongzhao0523/spider4j.git
-cd spider-evaluation-java
-./build.sh
-```
-
-### 2. Run Example
-
-```bash
-./run_example.sh
-```
-
-### 3. Command Line Usage
-
-```bash
-java -jar target/spider-evaluation-1.0.0.jar \
-  --gold gold_queries.txt \
-  --pred predicted_queries.txt \
-  --db database_directory/ \
-  --table tables.json \
-  --etype all
-```
-
-## 📊 Usage
-
-### Command Line Interface
-
-```bash
-java -jar spider-evaluation-1.0.0.jar [OPTIONS]
-
-Options:
-  --gold <file>     Gold SQL file (required)
-  --pred <file>     Predicted SQL file (required)
-  --db <dir>        Database directory (required)
-  --table <file>    Table schema file (required)
-  --etype <type>    Evaluation type: match, exec, all (default: all)
-```
-
-### Programmatic API
-
-```java
-SpiderEvaluationService service = new SpiderEvaluationService();
-EvaluationStatistics stats = service.evaluate(
-    goldFile, predFile, dbDir, tableFile, EvaluationType.ALL
-);
-stats.printResults();
-```
-
-## 📁 Data Format
-
-### Gold File Format
-```
-SELECT count(*) FROM head WHERE age > 56	department_management
-SELECT name, born_state FROM head ORDER BY age	department_management
-```
-
-### Prediction File Format
-```
-SELECT count(*) FROM head WHERE age > 56
-SELECT name, born_state FROM head ORDER BY age
-```
-
-### Table Schema Format
-```json
-[
-  {
-    "db_id": "department_management",
-    "table_names": ["department", "head", "management"],
-    "column_names": [[-1, "*"], [0, "department_id"], ...],
-    "column_types": ["text", "number", ...],
-    "foreign_keys": [[11, 1], [12, 7]],
-    "primary_keys": [1, 7]
-  }
-]
-```
-
-## 🏗️ Project Structure
-
-```
-spider-evaluation-java/
-├── src/main/java/com/nl2sql/spider/
-│   ├── constants/           # SQL constants and definitions
-│   ├── enums/              # Enumerations (difficulty, evaluation type)
-│   ├── evaluator/          # Core evaluation logic
-│   ├── model/              # Data models and structures
-│   ├── parser/             # SQL parsing components
-│   ├── service/            # High-level evaluation services
-│   ├── utils/              # Utility classes
-│   └── SpiderEvaluationCLI.java # Command-line interface
-├── data_j/                 # Test data and examples
-├── evaluation_examples_j/  # Evaluation examples
-├── baselines_j/           # Baseline models and benchmarks
-├── target/                # Build output
-├── pom.xml               # Maven configuration
-└── README_EN.md          # This file
-```
-
-## 📈 Evaluation Metrics
-
-### Difficulty Levels
-- **Easy**: Basic SELECT, WHERE queries
-- **Medium**: JOIN operations, aggregate functions
-- **Hard**: Complex multi-table JOINs, nested queries
-- **Extra**: Highly complex nested queries with multiple operations
-
-### Evaluation Types
-- **Exact Match**: Percentage of predictions that exactly match gold queries
-- **Execution**: Percentage of predictions that produce same results as gold queries
-- **Component F1**: Average F1 score across SQL components
-
-### Component Evaluation
-- **SELECT**: SELECT clause evaluation
-- **SELECT (no AGG)**: SELECT clause without aggregation functions
-- **WHERE**: WHERE clause evaluation
-- **WHERE (no OP)**: WHERE clause without operators
-- **GROUP BY**: GROUP BY clause evaluation
-- **ORDER BY**: ORDER BY clause evaluation
-- **AND/OR**: Logical operators evaluation
-- **IUEN**: INTERSECT/UNION/EXCEPT/NESTED queries evaluation
-- **Keywords**: SQL keywords evaluation
-
-## 🔄 Comparison with Python Version
-
-| Feature | Python Version | Java Version |
-|---------|---------------|--------------|
-| Performance | Moderate | High |
-| Memory Usage | Higher | Optimized |
-| Concurrency | Limited | Excellent |
-| Enterprise Integration | Basic | Advanced |
-| Deployment | Requires Python env | Single JAR file |
-| Type Safety | Dynamic | Static |
-| Maintainability | Good | Excellent |
-
-## 🐳 Docker Support
-
-```bash
-# Build Docker image
-docker build -t spider-evaluation-java .
-
-# Run evaluation
-docker run -v $(pwd)/data:/data spider-evaluation-java \
-  --gold /data/gold.txt \
-  --pred /data/pred.txt \
-  --db /data/databases/ \
-  --table /data/tables.json \
-  --etype all
-```
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-mvn test
-
-# Run specific test
-mvn test -Dtest=SpiderEvaluationServiceTest
-
-# Run with coverage
-mvn test jacoco:report
-```
-
-## 🏗️ Building
-
-```bash
-# Clean build
-mvn clean package
-
-# Skip tests
-mvn clean package -DskipTests
-
-# Build with specific profile
-mvn clean package -Pproduction
-```
-
-## 📊 Performance Benchmarks
-
-| Metric | Python Version | Java Version | Improvement |
-|--------|---------------|--------------|-------------|
-| Evaluation Speed | 1.0x | 3.2x | 220% faster |
-| Memory Usage | 1.0x | 0.6x | 40% less |
-| Startup Time | 2.5s | 0.8s | 68% faster |
-| Concurrent Requests | 1 | 10+ | 10x more |
-
-## 🔧 Configuration
-
-### Logging Configuration
-Edit `src/main/resources/logback.xml`:
+### Maven依赖
 
 ```xml
-<configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <root level="INFO">
-        <appender-ref ref="STDOUT" />
-    </root>
-</configuration>
+<dependency>
+    <groupId>com.nl2sql</groupId>
+    <artifactId>spider-evaluation</artifactId>
+    <version>1.0.0</version>
+</dependency>
 ```
 
-### JVM Options
-For better performance:
+### Gradle依赖
+
+```gradle
+implementation 'com.nl2sql:spider-evaluation:1.0.0'
+```
+
+## 📋 主要特性
+
+- ✅ **多数据库支持**: MySQL、PostgreSQL、Oracle、SQL Server、H2、SQLite
+- ✅ **动态Schema提取**: 无需tableFile，自动从数据库提取表结构
+- ✅ **静态Schema支持**: 兼容传统的tableFile模式
+- ✅ **Spring Boot集成**: 提供完整的Spring Boot Starter
+- ✅ **POJO接口**: 支持基于Java对象的独立测试
+- ✅ **CLI工具**: 命令行工具支持批量评估
+- ✅ **完全向后兼容**: 保持与原有API的兼容性
+
+## 🔧 基本使用
+
+### 1. 简单评估
+
+```java
+// 创建服务
+SpiderEvaluationService service = new SpiderEvaluationService();
+
+// 配置数据库
+DatabaseConfig dbConfig = new DatabaseConfig();
+dbConfig.setDbType("mysql");
+dbConfig.setHost("localhost");
+dbConfig.setPort(3306);
+dbConfig.setDatabase("your_database");
+dbConfig.setUsername("your_username");
+dbConfig.setPassword("your_password");
+
+// 创建评估项目
+List<SqlEvaluationItem> items = Arrays.asList(
+    new SqlEvaluationItem(
+        "SELECT * FROM users WHERE age > 18",
+        "SELECT * FROM users WHERE age > 18", 
+        "your_database",
+        "查询成年用户"
+    )
+);
+
+// 执行评估
+EvaluationStatistics stats = service.evaluateItems(items, dbConfig, EvaluationType.MATCH);
+System.out.println("准确率: " + stats.getLevelStatistics(HardnessLevel.ALL).getExactMatchScore());
+```
+
+### 2. Spring Boot集成
+
+```java
+@Service
+public class SqlEvaluationService {
+    
+    @Autowired
+    private SpiderEvaluationService spiderService;
+    
+    @Autowired
+    private DatabaseConfig databaseConfig;
+    
+    public EvaluationStatistics evaluate(List<SqlEvaluationItem> items) {
+        return spiderService.evaluateItems(items, databaseConfig, EvaluationType.MATCH);
+    }
+}
+```
+
+### 3. REST API
+
+```java
+@RestController
+@RequestMapping("/api/sql-evaluation")
+public class SqlEvaluationController {
+    
+    @PostMapping("/evaluate")
+    public ResponseEntity<EvaluationStatistics> evaluate(@RequestBody List<SqlEvaluationItem> items) {
+        EvaluationStatistics stats = sqlEvaluationService.evaluateSqlAccuracy(items);
+        return ResponseEntity.ok(stats);
+    }
+}
+```
+
+## 📚 API文档
+
+### 核心接口
+
+#### 1. 基于POJO的评估接口
+```java
+// 基础统计评估
+public EvaluationStatistics evaluateItems(List<SqlEvaluationItem> items, DatabaseConfig dbConfig, EvaluationType evaluationType)
+
+// 详细结果评估  
+public List<EvaluationResult> evaluateItemsDetailed(List<SqlEvaluationItem> items, DatabaseConfig dbConfig, EvaluationType evaluationType)
+
+// SQL验证
+public List<Boolean> validateItems(List<SqlEvaluationItem> items, DatabaseConfig dbConfig)
+```
+
+#### 2. 动态Schema接口
+```java
+// 无需tableFile的评估
+public EvaluationStatistics evaluateWithDynamicSchema(String goldFile, String predFile, DatabaseConfig dbConfig, EvaluationType evaluationType)
+
+// 单个SQL评估
+public EvaluationResult evaluateSingleWithDynamicSchema(String goldSql, String predSql, String dbId, DatabaseConfig dbConfig, EvaluationType evaluationType)
+```
+
+#### 3. 传统文件接口
+```java
+// 使用tableFile的评估
+public EvaluationStatistics evaluate(String goldFile, String predFile, String tableFile, DatabaseConfig dbConfig, EvaluationType evaluationType)
+
+// SQLite数据库评估
+public EvaluationStatistics evaluate(String goldFile, String predFile, String dbDir, EvaluationType evaluationType)
+```
+
+## 🗄️ 支持的数据库
+
+| 数据库 | 驱动 | 状态 |
+|--------|------|------|
+| MySQL | mysql-connector-j | ✅ 完全支持 |
+| PostgreSQL | postgresql | ✅ 完全支持 |
+| Oracle | ojdbc8 | ✅ 完全支持 |
+| SQL Server | mssql-jdbc | ✅ 完全支持 |
+| H2 | h2 | ✅ 完全支持 |
+| SQLite | sqlite-jdbc | ✅ 完全支持 |
+
+## 📖 详细文档
+
+- [Maven中央仓库发布指南](MAVEN_CENTRAL_RELEASE.md)
+- [Spring Boot集成指南](SPRING_BOOT_USAGE.md)
+- [MySQL测试配置指南](MYSQL_TEST_SETUP.md)
+- [MySQL评估使用指南](MYSQL_EVALUATION_GUIDE.md)
+
+## 🧪 测试
 
 ```bash
-java -Xmx4g -Xms2g -XX:+UseG1GC -jar spider-evaluation-1.0.0.jar [args]
+# 运行所有测试
+mvn test
+
+# 运行特定测试
+mvn test -Dtest=SpiderEvaluationServiceItemsTest
+
+# 跳过测试打包
+mvn clean package -DskipTests
 ```
 
-## 🤝 Contributing
+## 📦 构建
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING_EN.md) for details.
+```bash
+# 基本构建
+mvn clean package
 
-### Development Setup
+# 生成完整发布包（包含源码和文档）
+mvn clean package -P release
 
-1. Clone the repository
-2. Install Java 17+ and Maven 3.6+
-3. Run `mvn clean install`
-4. Import into your IDE
-5. Run tests with `mvn test`
+# 生成CLI工具
+java -jar target/spider-evaluation-1.0.0-cli.jar --help
+```
 
-### Code Style
+## 🌟 项目结构
 
-- Follow Java coding conventions
-- Use meaningful variable names
-- Add JavaDoc for public methods
-- Maintain test coverage above 80%
+```
+spider_j/
+├── src/main/java/com/nl2sql/spider/
+│   ├── config/          # 配置类
+│   ├── enums/           # 枚举定义
+│   ├── model/           # 数据模型
+│   ├── service/         # 核心服务
+│   └── utils/           # 工具类
+├── src/test/java/       # 测试代码
+├── MAVEN_CENTRAL_RELEASE.md    # 发布指南
+├── SPRING_BOOT_USAGE.md        # Spring Boot使用指南
+└── README.md           # 项目说明
+```
 
-## 📝 License
+## 🤝 贡献
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+欢迎提交Issue和Pull Request！
 
-## 🙏 Acknowledgments
+## 📄 许可证
 
-- Original Spider dataset and evaluation framework
-- Python implementation contributors
-- Java community for libraries and tools
+Apache License 2.0
 
-## 📞 Support
+## 📞 联系方式
 
-- **Issues**: [GitHub Issues](https://github.com/dawsongzhao0523/spider4j/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/dawsongzhao0523/spider4j/discussions)
-- **Email**: dawsongzhao0523@gmail.com
-
-## 🔄 Changelog
-
-### v1.0.0 (2025-07-06)
-- Initial Java implementation
-- Complete evaluation framework
-- CLI and API support
-- Docker support
-- Comprehensive documentation
+- GitHub Issues: [项目Issues](https://github.com/yourusername/spider-java-evaluation/issues)
+- Email: your.email@example.com
 
 ---
 
-**Note**: This is a Java reimplementation of the original Spider evaluation framework. For the original Python version, please visit the [original repository](https://github.com/taoyds/spider). 
+**注意**: 发布到Maven中央仓库前，请先完成[发布准备工作](MAVEN_CENTRAL_RELEASE.md)。 

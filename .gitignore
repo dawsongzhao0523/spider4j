@@ -1,28 +1,3 @@
-# Compiled class files
-*.class
-
-# Log files
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
-
 # Maven
 target/
 pom.xml.tag
@@ -37,13 +12,25 @@ buildNumber.properties
 
 # IDE
 .idea/
-*.iws
 *.iml
-*.ipr
 .vscode/
+.eclipse/
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
 .settings/
+.loadpath
+.recommenders
 .project
 .classpath
+.factorypath
+.buildpath
+.target
 
 # OS
 .DS_Store
@@ -54,46 +41,18 @@ buildNumber.properties
 ehthumbs.db
 Thumbs.db
 
-# Temporary files
-*.tmp
-*.temp
-*.swp
-*.swo
-*~
-
-# Test outputs
-test-output/
-test-results/
-
-# Coverage reports
-coverage/
-*.exec
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Application specific
+# Logs
+*.log
 logs/
-results/
-output/
-data/test_*
-evaluation_results/
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# GPG and Security - 重要：不要提交这些文件
+.gpg-configured
+.gpg-key-id
+.gpg-passphrase
+private-key.asc
+public-key.asc
+gpg-env.sh
+gpg-key-config
 
-# Docker
-.dockerignore
-
-# Backup files
-*.bak
-*.backup
-
-# JProfiler
-*.jprofiler 
+# Maven settings backup
+maven-settings-template.xml 
