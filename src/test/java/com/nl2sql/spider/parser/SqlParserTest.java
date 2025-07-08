@@ -142,6 +142,34 @@ public class SqlParserTest {
     private DatabaseSchema createTestSchema() {
         DatabaseSchema schema = new DatabaseSchema();
         schema.setDbId("test_db");
+        
+        // 初始化表名列表
+        List<String> tableNames = Arrays.asList("student", "course", "enrollment");
+        schema.setTableNames(tableNames);
+        schema.setTableNamesOriginal(tableNames);
+        
+        // 初始化列名列表 (简化版本)
+        List<List<Object>> columnNames = Arrays.asList(
+            Arrays.asList(0, "*"),
+            Arrays.asList(1, "id"),
+            Arrays.asList(1, "name"),
+            Arrays.asList(1, "age"),
+            Arrays.asList(1, "grade"),
+            Arrays.asList(2, "id"),
+            Arrays.asList(2, "title"),
+            Arrays.asList(2, "student_id")
+        );
+        schema.setColumnNames(columnNames);
+        schema.setColumnNamesOriginal(columnNames);
+        
+        // 初始化列类型
+        List<String> columnTypes = Arrays.asList("text", "number", "text", "number", "number", "number", "text", "number");
+        schema.setColumnTypes(columnTypes);
+        
+        // 初始化主键和外键
+        schema.setPrimaryKeys(Arrays.asList(1, 5));
+        schema.setForeignKeys(Arrays.asList(Arrays.asList(7, 1)));
+        
         return schema;
     }
 } 

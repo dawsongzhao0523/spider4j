@@ -41,10 +41,13 @@ public class SqlParser {
     private Map<String, String> getTablesWithAlias(DatabaseSchema schema, List<String> tokens) {
         Map<String, String> tables = scanAlias(tokens);
         
-        // 添加所有表名
-        for (String tableName : schema.getTableNames()) {
-            if (!tables.containsKey(tableName)) {
-                tables.put(tableName, tableName);
+        // 添加所有表名，检查空指针
+        List<String> tableNames = schema.getTableNames();
+        if (tableNames != null) {
+            for (String tableName : tableNames) {
+                if (!tables.containsKey(tableName)) {
+                    tables.put(tableName, tableName);
+                }
             }
         }
         
