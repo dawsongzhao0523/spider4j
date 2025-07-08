@@ -1,9 +1,11 @@
 package com.nl2sql.spider.evaluator;
 
+import com.nl2sql.spider.config.DatabaseConfig;
 import com.nl2sql.spider.constants.SqlConstants;
 import com.nl2sql.spider.enums.HardnessLevel;
 import com.nl2sql.spider.model.*;
 import com.nl2sql.spider.parser.SqlParser;
+import com.nl2sql.spider.utils.DatabaseConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +157,36 @@ public class SpiderEvaluator {
     }
     
     /**
+     * 评估执行准确性（使用数据库配置）
+     * 
+     * @param config 数据库配置
+     * @param predictedSql 预测的SQL
+     * @param goldSql 标准SQL
+     * @return 是否执行结果相同
+     */
+    public boolean evaluateExecution(DatabaseConfig config, String predictedSql, String goldSql) {
+        try (Connection conn = DatabaseConnectionManager.createConnection(config)) {
+            return executeAndCompare(conn, predictedSql, goldSql);
+        } catch (SQLException e) {
+            logger.error("Failed to evaluate execution for SQL: {} vs {} using config: {}", 
+                        predictedSql, goldSql, config, e);
+            return false;
+        }
+    }
+    
+    /**
+     * 评估执行准确性（使用现有连接）
+     * 
+     * @param conn 数据库连接
+     * @param predictedSql 预测的SQL
+     * @param goldSql 标准SQL
+     * @return 是否执行结果相同
+     */
+    public boolean evaluateExecution(Connection conn, String predictedSql, String goldSql) {
+        return executeAndCompare(conn, predictedSql, goldSql);
+    }
+    
+    /**
      * 验证SQL是否有效
      * 
      * @param dbPath 数据库路径
@@ -168,6 +200,42 @@ public class SpiderEvaluator {
             stmt.executeQuery(sql);
             return true;
         } catch (SQLException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 验证SQL是否有效（使用数据库配置）
+     * 
+     * @param config 数据库配置
+     * @param sql SQL字符串
+     * @return 是否有效
+     */
+    public boolean isValidSql(DatabaseConfig config, String sql) {
+        try (Connection conn = DatabaseConnectionManager.createConnection(config);
+             Statement stmt = conn.createStatement()) {
+            
+            stmt.executeQuery(sql);
+            return true;
+        } catch (SQLException e) {
+            logger.debug("SQL validation failed for: {} using config: {}", sql, config);
+            return false;
+        }
+    }
+    
+    /**
+     * 验证SQL是否有效（使用现有连接）
+     * 
+     * @param conn 数据库连接
+     * @param sql SQL字符串
+     * @return 是否有效
+     */
+    public boolean isValidSql(Connection conn, String sql) {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery(sql);
+            return true;
+        } catch (SQLException e) {
+            logger.debug("SQL validation failed for: {}", sql);
             return false;
         }
     }

@@ -52,6 +52,46 @@
             <version>${sqlite.version}</version>
         </dependency>
         
+        <!-- MySQL数据库 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- PostgreSQL数据库 -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- H2数据库 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.220</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- Oracle数据库 -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>21.9.0.0</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- SQL Server数据库 -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.4.0.jre11</version>
+            <optional>true</optional>
+        </dependency>
+        
         <!-- 日志框架 -->
         <dependency>
             <groupId>org.slf4j</groupId>
